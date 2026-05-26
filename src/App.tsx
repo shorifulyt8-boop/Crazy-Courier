@@ -904,6 +904,25 @@ export default function App() {
     setAuthLoading(true);
 
     try {
+      // Simulate network request delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const savedUsers = JSON.parse(localStorage.getItem('courier_registered_users') || '[]');
+      const localUser = savedUsers.find((u: any) => u.email.toLowerCase() === authEmail.toLowerCase().trim() && u.password === authPassword);
+
+      if (localUser) {
+        const { password, ...userWithoutPassword } = localUser;
+        localStorage.setItem('courier_user', JSON.stringify(userWithoutPassword));
+        setCurrentUser(userWithoutPassword as User);
+        setAuthModal(null);
+        setAuthEmail('');
+        setAuthPassword('');
+        addToast(`Welcome back, ${userWithoutPassword.name}!`, 'success');
+        setCurrentTab(userWithoutPassword.role === 'admin' ? 'admin' : 'dashboard');
+        setAuthLoading(false);
+        return;
+      }
+
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -939,39 +958,57 @@ export default function App() {
     setAuthLoading(true);
 
     try {
-      const res = await fetch('/api/auth/register', {
+      // Simulate network request
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const savedUsers = JSON.parse(localStorage.getItem('courier_registered_users') || '[]');
+      const trimmedEmail = authEmail.trim().toLowerCase();
+      
+      if (savedUsers.some((u: any) => u.email.toLowerCase() === trimmedEmail)) {
+        setAuthError('An account with this email already exists.');
+        addToast('An account with this email already exists.', 'error');
+        setAuthLoading(false);
+        return;
+      }
+
+      // Also call backend to see if it exists there, but don't strictly require it 
+      // if we want full pure local storage. Better to rely heavily on local storage.
+      const newUser = {
+        id: "u_local_" + Math.random().toString(36).substring(2, 11),
+        email: trimmedEmail,
+        name: authName,
+        password: authPassword, // Stored in local storage
+        role: authRole,
+        phone: phone,
+        companyName: authRole === 'merchant' ? companyName : undefined,
+        createdAt: new Date().toISOString()
+      };
+
+      savedUsers.push(newUser);
+      localStorage.setItem('courier_registered_users', JSON.stringify(savedUsers));
+
+      // Attempt to tell backend about this user so backend logs work
+      fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: authEmail,
-          name: authName,
-          password: authPassword,
-          role: authRole,
-          phone: phone,
-          companyName: authRole === 'merchant' ? companyName : undefined
-        }),
-      });
-      const data = await res.json();
+        body: JSON.stringify(newUser),
+      }).catch(e => console.error(e));
 
-      if (!res.ok) {
-        setAuthError(data.error || 'Registration constraints rejected.');
-        addToast(data.error || 'Registration constraints rejected.', 'error');
-      } else {
-        localStorage.setItem('courier_user', JSON.stringify(data.user));
-        setCurrentUser(data.user);
-        setAuthModal(null);
-        setAuthEmail('');
-        setAuthName('');
-        setAuthPassword('');
-        setPhone('');
-        setCompanyName('');
-        addToast(`Registered successfully! Welcome, ${data.user.name}.`, 'success');
-        // Redirect to dashboard page
-        setCurrentTab(data.user.role === 'admin' ? 'admin' : 'dashboard');
-      }
+      const { password, ...userWithoutPassword } = newUser;
+      localStorage.setItem('courier_user', JSON.stringify(userWithoutPassword));
+      setCurrentUser(userWithoutPassword as User);
+      setAuthModal(null);
+      setAuthEmail('');
+      setAuthName('');
+      setAuthPassword('');
+      setPhone('');
+      setCompanyName('');
+      addToast(`Registered successfully! Welcome, ${newUser.name}.`, 'success');
+      // Redirect to dashboard page
+      setCurrentTab(newUser.role === 'admin' ? 'admin' : 'dashboard');
     } catch (err) {
-      setAuthError('Registration backend offline.');
-      addToast('Registration backend offline.', 'error');
+      setAuthError('Registration local storage offline.');
+      addToast('Registration local storage offline.', 'error');
     } finally {
       setAuthLoading(false);
     }
