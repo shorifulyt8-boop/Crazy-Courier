@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { 
   User, 
   Shipment, 
@@ -48,7 +49,9 @@ import {
   FileText,
   LayoutDashboard,
   Copy,
-  Scan
+  Scan,
+  Star,
+  Quote
 } from 'lucide-react';
 import { BarcodeScanner } from './BarcodeScanner';
 
@@ -85,7 +88,7 @@ export default function App() {
   });
 
   // Navigation and UI state
-  const [currentTab, setCurrentTab] = useState<'home' | 'dashboard' | 'history' | 'notifications' | 'support' | 'admin' | 'profile'>(() => {
+  const [currentTab, setCurrentTab] = useState<'home' | 'about' | 'contact' | 'dashboard' | 'history' | 'notifications' | 'support' | 'admin' | 'profile'>(() => {
     const saved = localStorage.getItem('courier_user');
     if (saved) {
       try {
@@ -1007,8 +1010,9 @@ export default function App() {
       // Redirect to dashboard page
       setCurrentTab(newUser.role === 'admin' ? 'admin' : 'dashboard');
     } catch (err) {
-      setAuthError('Registration local storage offline.');
-      addToast('Registration local storage offline.', 'error');
+      console.error('Registration failed:', err);
+      setAuthError('Registration failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      addToast('Registration failed.', 'error');
     } finally {
       setAuthLoading(false);
     }
@@ -2996,7 +3000,7 @@ export default function App() {
 
           {/* FOOTER DESK */}
           <footer className="py-4 border-t border-slate-100 text-center text-[10px] text-slate-400 font-mono select-none mt-auto">
-            © 2026 Crazy Courier. All rights reserved
+            © 2026 Crazy Courier. All rights reserved | Developed And Maintanance By Shoriful Islam
           </footer>
 
           {isScannerOpen && (
@@ -3049,6 +3053,20 @@ export default function App() {
               className={`px-3 py-2 rounded-lg transition ${currentTab === 'home' ? 'bg-slate-100 text-slate-950' : 'hover:bg-slate-50 hover:text-slate-950'}`}
             >
               Home Service
+            </button>
+            <button 
+              id="nav-about"
+              onClick={() => setCurrentTab('about')} 
+              className={`px-3 py-2 rounded-lg transition ${currentTab === 'about' ? 'bg-slate-100 text-slate-950' : 'hover:bg-slate-50 hover:text-slate-950'}`}
+            >
+              About Us
+            </button>
+            <button 
+              id="nav-contact"
+              onClick={() => setCurrentTab('contact')} 
+              className={`px-3 py-2 rounded-lg transition ${currentTab === 'contact' ? 'bg-slate-100 text-slate-950' : 'hover:bg-slate-50 hover:text-slate-950'}`}
+            >
+              Contact Us
             </button>
             {currentUser && (
               <>
@@ -3247,23 +3265,48 @@ export default function App() {
         
         {/* --- VIEW: HOME (Landing Page and Quick Public Tracking Tool) --- */}
         {currentTab === 'home' && (
-          <div className="space-y-12 animate-fade-in" id="landing-hero-view">
+          <div className="space-y-12" id="landing-hero-view">
             
             {/* Elegant Hero display with tracking number search */}
-            <section className="text-center max-w-4xl mx-auto space-y-6 pt-2">
-              <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3.5 py-1.5 rounded-full uppercase tracking-widest inline-flex items-center gap-1.5">
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="text-center max-w-4xl mx-auto space-y-6 pt-2"
+            >
+              <motion.span 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+                className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3.5 py-1.5 rounded-full uppercase tracking-widest inline-flex items-center gap-1.5"
+              >
                 <Truck className="w-3.5 h-3.5" /> Next-generation Logistics Systems
-              </span>
-              <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-[1.15]" id="landing-hero-headline">
+              </motion.span>
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="text-3xl sm:text-5xl font-extrabold text-slate-900 leading-[1.15]" id="landing-hero-headline"
+              >
                 Seamless Nationwide Delivery, <br />
                 <span className="bg-gradient-to-r from-emerald-600 to-indigo-600 bg-clip-text text-transparent">Tracked in Microsecond Intervals</span>
-              </h1>
-              <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed">
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed"
+              >
                 Empowering independent online merchants and everyday customers with live automated SMTP tracking alerts, secure unified package checkouts, and dedicated remote helper support desks.
-              </p>
+              </motion.p>
 
               {/* Public Real-Time Tracking Input */}
-              <div className="max-w-xl mx-auto bg-white p-2 rounded-2xl border border-slate-150 shadow-sm mt-8" id="quick-tracking-search-bar">
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6, type: "spring", bounce: 0.4 }}
+                className="max-w-xl mx-auto bg-white p-2 rounded-2xl border border-slate-150 shadow-sm mt-8" id="quick-tracking-search-bar"
+              >
                 <form onSubmit={handlePublicTrackSearch} className="flex">
                   <div className="flex-grow flex items-center px-3 gap-2">
                     <Search className="text-slate-400 w-5 h-5 flex-shrink-0" />
@@ -3285,15 +3328,20 @@ export default function App() {
                     {publicSearchLoading ? 'Routing...' : 'Track Package'}
                   </button>
                 </form>
-              </div>
+              </motion.div>
 
               {publicSearchError && (
                 <p className="text-xs text-red-600 font-semibold mt-2">{publicSearchError}</p>
               )}
-            </section>
+            </motion.section>
 
             {/* Quick Demo Credentials Panel for Users & Merchants */}
-            <section className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm max-w-3xl mx-auto" id="quick-credentials-panel">
+            <motion.section 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm max-w-3xl mx-auto" id="quick-credentials-panel"
+            >
               <h3 className="text-center text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Sandbox Quick-logins for Live Testing</h3>
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <button 
@@ -3334,7 +3382,7 @@ export default function App() {
                 </button>
               </div>
               <p className="text-center text-[10px] text-slate-400 mt-3 font-medium">Click on any account to immediately test their integrated workflow dashboard.</p>
-            </section>
+            </motion.section>
 
             {/* Public searched shipment tracking widget rendering block */}
             {publicSearchedShipment && (
@@ -3351,8 +3399,14 @@ export default function App() {
             )}
 
             {/* Feature Bento Section */}
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-6" id="bento-features-row">
-              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-3">
+            <motion.section 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6" id="bento-features-row"
+            >
+              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-3 transition-transform hover:-translate-y-1 hover:shadow-md">
                 <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
                   <Mail className="w-5 h-5" />
                 </div>
@@ -3362,7 +3416,7 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-3">
+              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-3 transition-transform hover:-translate-y-1 hover:shadow-md">
                 <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
                   <CreditCard className="w-5 h-5" />
                 </div>
@@ -3372,7 +3426,7 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-3">
+              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-3 transition-transform hover:-translate-y-1 hover:shadow-md">
                 <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
                   <UserCheck className="w-5 h-5" />
                 </div>
@@ -3381,10 +3435,194 @@ export default function App() {
                   Submit tickets with tracking number markers. Support staff can reply and resolve queries immediately, automatically resetting passwords via the admin override terminal.
                 </p>
               </div>
+            </motion.section>
+
+            {/* How it Works Section */}
+            <section className="py-12 mt-8 border-t border-slate-100">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">How Crazy Courier Works</h2>
+                <p className="text-sm text-slate-500 mt-2 max-w-2xl mx-auto">From merchant fulfillment to customer doorstep—everything tracked and verified.</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+                {/* Connecting line for desktop */}
+                <div className="hidden md:block absolute top-[45px] left-0 right-0 h-0.5 bg-slate-100 z-0 px-24"></div>
+                
+                {[
+                  { icon: <UserIcon />, title: "1. Create Account", desc: "Register as a merchant to dispatch or a customer to receive." },
+                  { icon: <Package />, title: "2. Book Parcel", desc: "Merchants enter dispatch details and generate printable secure waybills." },
+                  { icon: <Truck />, title: "3. Fleet Dispatch", desc: "Riders scan the parcel and begin the localized transit pipeline." },
+                  { icon: <CheckCircle2 />, title: "4. Swift Delivery", desc: "Customers receive real-time email telemetry until the package arrives." }
+                ].map((step, idx) => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.15, duration: 0.5 }}
+                    key={idx} 
+                    className="relative z-10 flex flex-col items-center text-center space-y-3"
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-white border-2 border-emerald-100 text-emerald-600 flex items-center justify-center shadow-md">
+                      {step.icon}
+                    </div>
+                    <h4 className="font-bold text-slate-800 text-sm">{step.title}</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed px-4">{step.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
             </section>
 
+            {/* Testimonials Section */}
+            <section className="py-16 border-t border-slate-100 overflow-hidden bg-slate-50 rounded-3xl mt-12 px-4 sm:px-8">
+              <div className="text-center mb-12">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Trusted by Independent Merchants</h2>
+                <p className="text-sm text-slate-500 mt-2 max-w-2xl mx-auto">See how Crazy Courier is transforming logistics for growing brands across the country.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                {[
+                  { name: "Sarah Jenkins", role: "Owner, Bloom Boutique", text: "The automated SMTP alerts have cut our customer support queries by 80%. Customers know exactly where their packages are." },
+                  { name: "Rafiq Ahmed", role: "Director, GearHub", text: "Tracking intervals are incredibly precise. Since switching to Crazy Courier, our delivery success rate has jumped." },
+                  { name: "Lisa Wong", role: "Founder, Minimalist Beauty", text: "The merchant dashboard is just so intuitive. Generating secure waybills takes seconds instead of minutes." }
+                ].map((testimonial, idx) => (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.15, duration: 0.5 }}
+                    key={idx} 
+                    className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative group transition hover:shadow-md"
+                  >
+                    <Quote className="absolute top-6 right-8 w-8 h-8 text-emerald-100 group-hover:text-emerald-200 transition" />
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />)}
+                    </div>
+                    <p className="text-slate-600 text-sm leading-relaxed mb-6 italic">"{testimonial.text}"</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-700 font-bold uppercase">
+                        {testimonial.name.slice(0, 2)}
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-900">{testimonial.name}</p>
+                        <p className="text-[10px] text-slate-500">{testimonial.role}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-16 max-w-4xl mx-auto px-4 sm:px-6 border-t mt-12 border-slate-100">
+              <div className="text-center mb-12">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
+                <p className="text-sm text-slate-500 mt-2">Everything you need to know about our logistic operations.</p>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  { q: "How does the real-time tracking work?", a: "Every time a fleet rider updates the status of a parcel via their dedicated app layout, the central system triggers an automated microsecond-precision sync log available to both merchant and customer." },
+                  { q: "Do you offer Cash on Delivery (COD)?", a: "Yes, our robust network seamlessly handles COD fulfillment directly alongside standard prepaid checkouts, ensuring accurate reconciliations." },
+                  { q: "How long until I receive SMTP alerts?", a: "Alerts are sent to your verified email account instantly the moment a package is dispatched, delayed, or marked fully delivered." },
+                  { q: "Is the sandbox free to use?", a: "Absolutely. The developer sandbox permits immediate full access to try merchant, rider, and admin systems with no credit card requirement." }
+                ].map((faq, idx) => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1, duration: 0.4 }}
+                    key={idx}
+                    className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition"
+                  >
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                        <HelpCircle className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-800 text-sm">{faq.q}</h4>
+                        <p className="text-xs text-slate-500 leading-relaxed mt-2">{faq.a}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </section>
+
+            {/* Global Statistics */}
+            <motion.section 
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="bg-slate-900 rounded-3xl p-8 sm:p-12 text-white my-12 relative overflow-hidden shadow-2xl"
+            >
+              <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                <Scan className="w-64 h-64" />
+              </div>
+              
+              <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-slate-800">
+                <div className="space-y-2 py-4">
+                  <h3 className="text-4xl font-black text-emerald-400">99.9%</h3>
+                  <p className="text-xs font-mono text-slate-400 uppercase tracking-widest">Routing Accuracy</p>
+                </div>
+                <div className="space-y-2 py-4">
+                  <h3 className="text-4xl font-black text-indigo-400">10k+</h3>
+                  <p className="text-xs font-mono text-slate-400 uppercase tracking-widest">Daily Scanned Parcels</p>
+                </div>
+                <div className="space-y-2 py-4">
+                  <h3 className="text-4xl font-black text-amber-400">24/7</h3>
+                  <p className="text-xs font-mono text-slate-400 uppercase tracking-widest">Support Telemetry</p>
+                </div>
+              </div>
+              
+              <div className="mt-12 text-center">
+                <button 
+                  onClick={() => { setAuthRole('merchant'); setAuthModal('register'); }}
+                  className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-8 py-3 rounded-full transition shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                >
+                  Join Merchant Network Today
+                </button>
+                <p className="text-[10px] text-slate-500 mt-4">*No credit card required for sandbox registration.</p>
+              </div>
+            </motion.section>
 
           </div>
+        )}
+
+        {currentTab === 'about' && (
+          <div className="max-w-4xl mx-auto py-12 px-4 text-center animate-fade-in" id="about-view">
+            <h1 className="text-4xl font-black text-slate-900 mb-6">About Crazy Courier</h1>
+            <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+              Crazy Courier is a next-generation logistics platform designed to optimize delivery workflows, 
+              provide real-time shipment monitoring, and streamline communication between merchants, 
+              customers, and fleet riders. We believe in transparency, speed, and accuracy at every step.
+            </p>
+            <div className="bg-white border border-slate-100 p-8 rounded-3xl shadow-sm">
+                <h3 className="font-bold text-slate-800 mb-4">Our Mission</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">
+                    To digitize and simplify nationwide logistics through microsecond-precision data analytics and 
+                    a user-centric design approach, making parcel management seamless for everyone involved.
+                </p>
+            </div>
+          </div>
+        )}
+        {currentTab === 'contact' && (
+            <div className="max-w-3xl mx-auto py-12 px-4 animate-fade-in" id="contact-view">
+              <h1 className="text-4xl font-black text-slate-900 mb-6 text-center">Contact Us</h1>
+              <p className="text-center text-slate-500 mb-10">We're here to help. Reach out for any questions, support requests, or partnership inquiries.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm">
+                      <h3 className="font-bold text-slate-800 mb-2">Support Desk</h3>
+                      <p className="text-xs text-slate-500 mb-4">Our team is available 24/7 to assist with your inquiries.</p>
+                      <p className="text-sm font-bold text-emerald-600">support@example.com</p>
+                  </div>
+                  <div className="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm">
+                      <h3 className="font-bold text-slate-800 mb-2">Partnerships</h3>
+                      <p className="text-xs text-slate-500 mb-4">Interested in integrating with our logistics network?</p>
+                      <p className="text-sm font-bold text-indigo-600">partnerships@example.com</p>
+                  </div>
+              </div>
+            </div>
         )}
 
         {/* --- VIEW: DASHBOARD (Unified Control Center based on roles) --- */}
@@ -5445,7 +5683,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 space-y-2">
           <p className="font-bold text-slate-700">Crazy Courier Systems Inc.</p>
           <p className="max-w-md mx-auto text-[11px]">PCI-Compliant Sandbox Environment. Registered trademarks of Crazy Courier. Real-time courier updates automatically simulated.</p>
-          <p className="font-mono text-[10px] text-slate-300">UT-TIME TRANS-GATEWAYS 2026</p>
+          <p className="font-mono text-[10px] text-slate-300">Developed And Maintanance By Shoriful Islam</p>
         </div>
       </footer>
 
