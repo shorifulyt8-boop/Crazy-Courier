@@ -1,0 +1,6 @@
+{
+  "name": "Courier Service Website",
+  "description": "Courier and logistics portal featuring real-time tracking, customer and merchant login, secure payment gateway simulator, customer support desk with admin controls, and order history.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
